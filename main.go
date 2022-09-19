@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,7 @@ func start(db *gorm.DB) *gorm.DB {
 	// migrate(db)
 	// seed(db)
 }
+
 func getAll(ctxt *gin.Context) {
 	db := start(db)
 	tasks := getTasks(db)
@@ -30,10 +32,20 @@ func getFalse(ctxt *gin.Context) {
 	Ftasks := getTasksFalse(db)
 	ctxt.IndentedJSON(http.StatusOK, Ftasks)
 }
+func create(ctxt *gin.Context) {
+	var newTask Task
+	fmt.Println("create called ...")
+	if err := ctxt.BindJSON(&newTask); err != nil {
+		return
+	}
+	db := start(db)
+	createTask(db, newTask)
+}
 func main() {
 	db = start(db)
 	router = gin.Default()
 	router.GET("/tasks/all/", getAll)
 	router.GET("/tasks/uncompleted/", getFalse)
+	router.POST("/tasks/create/", create)
 	router.Run("localhost:8080")
 }

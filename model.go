@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -37,4 +39,8 @@ func getTaskById(db *gorm.DB, id int) Task {
 	var task = Task{Id: id}
 	db.First(&task)
 	return task
+}
+func createTask(db *gorm.DB, t Task) {
+	fmt.Println(t)
+	db.Create(&t)
 }
