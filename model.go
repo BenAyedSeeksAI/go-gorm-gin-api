@@ -35,11 +35,16 @@ func getTasksFalse(db *gorm.DB) []Task {
 	db.Where("completed = ?", "0").Find(&tasks)
 	return tasks
 }
-func getTaskById(db *gorm.DB, id int) Task {
+func getTaskById(db *gorm.DB, id int) (error, Task) {
 	var task = Task{Id: id}
-	db.First(&task)
-	return task
+	result := db.First(&task)
+	if result.Error != nil {
+		fmt.Println("Record not found !")
+		return result.Error, Task{}
+	}
+	return nil, task
 }
+
 func createTask(db *gorm.DB, t Task) {
 	fmt.Println(t)
 	db.Create(&t)

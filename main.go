@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
@@ -41,11 +42,20 @@ func create(ctxt *gin.Context) {
 	db := start(db)
 	createTask(db, newTask)
 }
+func getId(ctxt *gin.Context) {
+	db := start(db)
+	id := ctxt.Param("Id")
+	ident, _ := strconv.Atoi(id)
+	_, task := getTaskById(db, ident)
+	ctxt.JSON(http.StatusOK, task)
+}
 func main() {
 	db = start(db)
 	router = gin.Default()
 	router.GET("/tasks/all/", getAll)
 	router.GET("/tasks/uncompleted/", getFalse)
+	router.GET("/tasks/:id/")
 	router.POST("/tasks/create/", create)
 	router.Run("localhost:8080")
+
 }
